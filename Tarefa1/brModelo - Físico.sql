@@ -71,4 +71,5 @@ ALTER TABLE encontra_se_em ADD CONSTRAINT FK_encontra_se_em_1
 ALTER TABLE encontra_se_em ADD CONSTRAINT FK_encontra_se_em_2
     FOREIGN KEY (fk_Entidade_4_Cod_Produto)
     REFERENCES PRODUTOS (Cod_Produto)
+
     ON DELETE SET NULL;

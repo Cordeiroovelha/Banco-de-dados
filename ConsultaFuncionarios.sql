@@ -146,6 +146,10 @@ ALTER TABLE TESTE
  ADD CONSTRAINT pk_id PRIMARY KEY (ID)
 GO
 
+-- Deleta tabela --
+DROP TABLE TESTE;
+Go
+
 -- Verificar todos os dados da tabela --
 EXEC sp_columns TESTE;
 Go
@@ -162,6 +166,14 @@ Select TABLE_CATALOG    AS 'Banco de Dados',
        DATA_TYPE        AS 'Tipos de Dados',
        COLLATION_NAME    AS 'Idioma da Coluna',
        IS_NULLABLE      AS 'Aceita Nulo?'
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'TESTE';
+GO
+
+
+Select TABLE_CATALOG    AS 'Banco de Dados',
+       TABLE_NAME       AS 'Tabela'
+       
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME = 'TESTE';
 GO

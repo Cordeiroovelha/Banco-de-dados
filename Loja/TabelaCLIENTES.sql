@@ -92,6 +92,31 @@ INSERT INTO CLIENTES (ID, Nome, Sexo ,Idade, CPF)
 		(15, 'Fernanda Pereira', 'f', 31, '60606060606')
 GO
 
-
+-- Consulta de elementos da tabela --
 SELECT * FROM CLIENTES;
+GO
+
+-- Exibição de informações sobre a estrutura da tabela --
+SELECT TABLE_CATALOG    AS 'Banco de Dados',
+       TABLE_NAME       AS 'Tabela',
+       ORDINAL_POSITION AS 'Posiçao',
+       COLUMN_NAME      AS 'Coluna',
+       DATA_TYPE        AS 'Tipos de Dados',
+       COLLATION_NAME   AS 'Idioma da Coluna',
+       IS_NULLABLE      AS 'Aceita Nulo?'
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'CLIENTES';
+GO
+
+-- Exibição de informações de restrição --
+SELECT TABLE_CATALOG     AS 'Banco de Dados',
+       TABLE_NAME        AS 'Tabela',
+       CONSTRAINT_TYPE   AS 'Tipo de Restrição',
+       CONSTRAINT_NAME   AS 'Nome da Restrição'
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+WHERE TABLE_NAME = 'CLIENTES';
+GO
+
+-- Verifica a estrutura da tabela usando SP_HELP
+EXEC sp_help 'CLIENTES';
 GO

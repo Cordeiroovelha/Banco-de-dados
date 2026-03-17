@@ -1,12 +1,12 @@
 -- criação do banco de dados--
-CREATE DATABASE EmpresaCJ3034747;
+CREATE DATABASE Empresa;
 GO
 -- habilitar o contexto -- 
-USE EmpresaCJ3034747;
+USE Empresa;
 GO
 
 -- Cria a tabela FUNCIONARIOS -- 
-CREATE TABLE FUNCIONARIOS01 (
+CREATE TABLE FUNCIONARIOS (
     ID        INT            PRIMARY KEY,
     Nome      VARCHAR(25)    NOT NULL,
     Sexo      CHAR(1)        NULL,
@@ -42,6 +42,47 @@ GO
 
 -- exibe os dados da tabela FUNCIONARISO --
 SELECT * FROM FUNCIONARIOS;
+GO
+
+-- Adicionar o elemento Telefone --
+ALTER TABLE FUNCIONARIOS
+    ADD Telefone    CHAR(10)
+GO
+
+-- update de todos telefone --
+UPDATE FUNCIONARIOS
+    SET Telefone = NULL;
+GO
+
+UPDATE FUNCIONARIOS
+    SET Telefone = '3668-0010'
+    WHERE ID = 1;
+GO
+
+UPDATE FUNCIONARIOS SET Telefone = '3668-1550' WHERE ID = 2;
+UPDATE FUNCIONARIOS SET Telefone = '3664-5000' WHERE ID = 3;
+UPDATE FUNCIONARIOS SET Telefone = '3664-2001' WHERE ID = 4;
+UPDATE FUNCIONARIOS SET Telefone = '3663-9000' WHERE ID = 5;
+GO
+
+-- Aumento --
+UPDATE FUNCIONARIOS
+    SET Salario = Salario * 1.10
+    WHERE YEAR(Admissao) <= 2026;
+GO
+
+-- Tabela copia teste --
+SELECT *
+    INTO FuncionariosCOPIA
+FROM FUNCIONARIOS;
+GO
+
+-- truncate DELETA todos os registros da tabela --
+TRUNCATE TABLE FuncionariosCOPIA;
+GO
+
+-- DROP (Deleta a tabela) --
+DROP TABLE [FuncionariosCOPIA];
 GO
 
 -------------------------------------------
@@ -85,6 +126,33 @@ SELECT * FROM FUNCIONARIOS
 WHERE Sexo = 'm' AND
       Salario > 1000;
 GO
+
+-- <> = Operador de diferença --
+SELECT * FROM FUNCIONARIOS
+WHERE Sexo <> 'm';
+GO
+
+-- AND = Operador de add --
+SELECT * FROM FUNCIONARIOS
+WHERE Sexo <> 'm' AND Sexo = NULL;
+GO
+
+-- BETWEEM = Operador de entre --
+SELECT * FROM FUNCIONARIOS
+WHERE Salario BETWEEN 1000 AND 1800;
+GO
+
+-- IS NOT NULL = Seleciona quando não é nulo
+SELECT * FROM FUNCIONARIOS
+WHERE Sexo IS NOT NULL;
+GO
+
+-- Delete --
+DELETE FROM FuncionariosCOPIA
+WHERE Salario < 1500;
+GO
+
+-- EXISTS = Verifica se existe --
 
 -- ORDER BY crescente e decrescente --
 
@@ -185,18 +253,6 @@ FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME = 'TESTE';
 GO
 
-
--- Tabela Clientes --
-CREATE TABLE CLIENTES (
-	ID    INT		   PRIMARY KEY,
-	Nome  VARCHAR(50)  NOT NULL,
-	Sexo  CHAR(1)	   NULL,
-	Idade INT		   NOT NULL CHECK (Idade > 18),
-	CPF   CHAR(11)	   NOT NULL UNIQUE,
-	Email VARCHAR(200) NOT NULL DEFAULT 'meu@email.com'
-);
-GO
-
 -- Tabela temporaria Local --
 CREATE TABLE #TabelaA (
 	ID   INT         NOT NULL,
@@ -266,4 +322,15 @@ ALTER TABLE FuncionariosCOPIA
 GO
 
 SELECT * FROM FuncionariosCOPIA
+GO
+
+-- Tabela Clientes --
+CREATE TABLE CLIENTES (
+	ID    INT		   PRIMARY KEY,
+	Nome  VARCHAR(50)  NOT NULL,
+	Sexo  CHAR(1)	   NULL,
+	Idade INT		   NOT NULL CHECK (Idade > 18),
+	CPF   CHAR(11)	   NOT NULL UNIQUE,
+	Email VARCHAR(200) NOT NULL DEFAULT 'meu@email.com'
+);
 GO

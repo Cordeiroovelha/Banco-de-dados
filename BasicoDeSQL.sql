@@ -147,12 +147,26 @@ SELECT * FROM FUNCIONARIOS
 WHERE Sexo IS NOT NULL;
 GO
 
+-- LIKE para mostar registros semelhantes --
+SELECT * FROM FUNCIONARIOS
+WHERE Nome Like 'M%';
+GO
+
+-- LIKE de exclusão --
+SELECT * FROM FUNCIONARIOS
+WHERE Nome Like '[^M]%';
+GO
+
+-- UPPER Para deixar o registro todo em maiusculo para facilitar pesquisa --
+SELECT * FROM FUNCIONARIOS
+WHERE UPPER(Nome) Like 'M%'
+ORDER BY Nome;
+GO
+
 -- Delete --
 DELETE FROM FuncionariosCOPIA
 WHERE Salario < 1500;
 GO
-
--- EXISTS = Verifica se existe --
 
 -- ORDER BY crescente e decrescente --
 
@@ -172,6 +186,60 @@ SELECT * FROM FUNCIONARIOS
 WHERE Salario > 1000
 ORDER BY Nome,
          Salario DESC;
+GO
+
+----------------------------------------
+-- VIEW --
+CREATE VIEW MaioresSalarios AS
+    SELECT ID       AS 'Codigo do Funcionario',
+           Nome,
+           Sexo,
+           Salario  AS 'Salário'
+    FROM FUNCIONARIOS
+GO
+
+-- SELECT do VIEW --
+SELECT * FROM MaioresSalarios;
+GO
+
+-- SELECT especifico --
+SELECT [Codigo do Funcionario],
+       Nome,
+       [Salário]
+FROM MaioresSalarios;
+GO
+
+-- ALTER VIEW --
+ALTER VIEW MaioresSalarios AS
+    SELECT ID       AS 'Codigo do Funcionario',
+           Nome,
+           Sexo     AS 'Genero do Funcionario',
+           Salario  AS 'Salário'
+    FROM FUNCIONARIOS
+    ORDER BY Salario DESC
+    OFFSET 0 ROWS;
+GO
+
+--SELECT após alteração --
+SELECT [Codigo do Funcionario],
+       Nome,
+       "Genero do Funcionario",
+       Salário
+FROM MaioresSalarios
+WHERE Salário > 2750;
+GO
+
+--Exibe informaçoes do VIEW --
+EXEC sp_helptext MaioresSalarios;
+GO
+
+SELECT TABLE_NAME      AS 'Nome da View',
+       VIEW_DEFINITION AS 'Código SQL'
+FROM INFORMATION_SCHEMA.VIEWS;
+GO
+
+-- Excluir VIEW --
+DROP VIEW MaioresSalarios;
 GO
 
 -- Alterar a estrutura da tabela --

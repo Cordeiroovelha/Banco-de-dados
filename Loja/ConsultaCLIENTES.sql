@@ -73,3 +73,13 @@ WHERE Idade >= 30 AND
 	  Sexo = 'm'
 ORDER BY Nome;
 GO
+
+---------- Lista03 ----------
+-- Ex01 --
+ALTER TABLE FUNCIONARIOS
+    ADD Telefone    CHAR(10)
+GO
+
+ALTER TABLE FUNCIONARIOS
+    ADD DDD    CHAR(2)
+GO

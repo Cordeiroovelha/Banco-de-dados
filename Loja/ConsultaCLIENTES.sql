@@ -137,3 +137,36 @@ GO
 
 DROP TABLE CLIENTES2
 GO
+
+-- Ex05 --
+DELETE FROM CLIENTES2 WHERE DDD = NULL;
+GO
+
+-- Ex06 --
+TRUNCATE TABLE CLIENTES2;
+GO
+
+-- Ex07 --
+DROP TABLE CLIENTES2
+GO
+
+-- Ex08 --
+UPDATE CLIENTES
+	SET DDD = '15',
+		Email = 'fernando.pereira@uol.com.br'
+WHERE ID = 15;
+GO
+
+-- Ex09 --
+SELECT ID,
+	   Nome, 
+	   Sexo,
+	   Idade,
+	   DDD,
+	   Telefone
+FROM CLIENTES
+WHERE Idade > 40
+ORDER BY Idade	DESC;
+GO
+
+-- Ex10 --

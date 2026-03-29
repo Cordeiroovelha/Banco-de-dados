@@ -170,3 +170,26 @@ ORDER BY Idade	DESC;
 GO
 
 -- Ex10 --
+SELECT ID,
+	   Nome, 
+	   Email	AS 'e-mail',
+	   DDD		AS 'Codigo de área',
+	   Telefone
+FROM CLIENTES
+WHERE Email = 'meu@email.com' OR Telefone IS NULL
+ORDER BY Nome;
+GO
+
+
+-- Ex11 --
+SELECT ID,
+	   Nome,
+	   Sexo,
+	   Idade,
+	   Email	AS 'e-mail'
+FROM CLIENTES
+WHERE Sexo = 'm' AND Idade BETWEEN 20 AND 50
+ORDER BY ID DESC;
+GO
+
+-- Ex12 --

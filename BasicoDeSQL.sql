@@ -157,6 +157,11 @@ SELECT * FROM FUNCIONARIOS
 WHERE Nome Like '[^M]%';
 GO
 
+-- AVG Media --
+SELECT * FROM FUNCIONARIOS
+WHERE AVG(Salario);
+GO
+
 -- UPPER Para deixar o registro todo em maiusculo para facilitar pesquisa --
 SELECT * FROM FUNCIONARIOS
 WHERE UPPER(Nome) Like 'M%'

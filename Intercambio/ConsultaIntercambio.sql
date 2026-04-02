@@ -169,3 +169,124 @@ WHERE CodViagem > ALL (
 );
 GO
 
+-- MATH --
+
+SELECT '3.1415'        AS 'PI',
+       PI()            AS 'PI',
+       ABS(-3.1415)    AS 'ABS',
+       CEILING(3.1415) AS 'CEILING',
+       FLOOR(3.1415)   AS 'FLOOR',
+       EXP(1.0)        AS 'EXP',
+       POWER(2,3.0)    AS 'POWER',
+       RAND(5)         AS 'RAND',
+       ROUND(PI(), 2)  AS 'ROUND',
+       SQRT(100)       AS 'SQRT',
+       SIGN(-1)        AS 'SIGN',
+       SQUARE(3)       AS 'SQUARE'
+GO
+
+-- Exemplo Pratico --
+SELECT V.CodViagem     AS 'Codigo da viagem',
+       A.NomeAluno     AS 'Nome do Aluno',
+       V.Valor         AS 'Preço da viagem',
+       V.Valor * 0.05  AS 'Desconto de 5%',
+       V.Valor * 0.95  AS 'Total a pagar',
+       ROUND(V.Valor * 0.95, 1) AS 'Total Arredondoado'
+FROM VIAGENS V INNER JOIN ALUNOS A
+    ON V.CodViagem = A.CodViagem;
+GO
+
+
+-- Funções com precisão superior e inferior --
+SELECT SYSDATETIME()        AS 'SYSDATETIME',
+       SYSDATETIMEOFFSET()  AS 'SYSDATETIMEOFFSET',
+       SYSUTCDATETIME()     AS 'SYSUTCDATETIME',
+       CURRENT_TIMESTAMP    AS 'CURRENT_TIMESTAMP',
+       GETDATE()            AS 'GETDATE',
+       GETUTCDATE()         AS 'GETUTCDATE'
+GO
+
+-- Exemplo pratico --
+SELECT CodAluno         AS 'Codigo do Aluno',
+       DataNasc         AS 'Data de Nascimento',
+       DAY(DataNasc)    AS 'Dia do Nascimento',
+       MONTH(DataNasc) AS 'Mes do Nascimento',
+       YEAR(DataNasc)   AS 'Ano do Nascimento',
+       DATEPART(WEEK, DataNasc)    AS 'Semana do Nascimento',
+       DATEPART(WEEKDAY, DataNasc) AS 'Dia da semana do Nascimento'
+FROM ALUNOS;
+GO
+
+-- Declaração de variaveis em MySQL --
+DECLARE @dia    AS INT,
+        @mes    AS CHAR(20),
+        @ano    AS INT,
+        @data1  AS DATE,
+        @data2  AS DATETIME;
+
+--Atribuindo Valores --
+SET @dia = DAY(GETDATE());
+SET @mes = MONTH(GETDATE());
+SET @ano = YEAR(GETDATE());
+SET @data1 = DATEFROMPARTS(@ano, @mes, @dia);
+SET @data2 = DATETIMEFROMPARTS(@ano, @mes, @dia, 0, 0, 0, 0);
+
+-- Select --
+-- Do modo que foi feito precisa selecionar tudo para funcionar --
+SELECT @dia    AS 'Dia',
+       @mes    AS 'Mes',
+       @ano    AS 'Ano',
+       @data1  AS 'Data 1',
+       @data2  AS 'Data 2';
+GO
+
+-- Diferença entre datas e horas --
+DECLARE @data1 AS DATE,
+        @data2 AS DATE;
+SET DATEFORMAT DMY;
+SET @data1 = '01/01/2024';
+SET @data2 = GETDATE();
+
+SELECT @data1 AS 'Data Inicial',
+       @data2 AS 'Data Hoje',
+       DATEDIFF(DAY, @data1, @data2)  AS 'Qtd. Dias',
+       DATEDIFF(HOUR, @data1, @data2) AS 'Qtd. Horas';
+GO
+
+-- Modificação de data e valores da hora --
+SELECT GETDATE() AS 'Data atual',
+       DATEADD(MONTH, 5, GETDATE()) AS 'Proximos 5 meses',
+       EOMONTH(GETDATE(), 5)        AS 'Final do mes (5 meses)',
+       SWITCHOFFSET(GETDATE(), '+10:00') AS 'Alteração do fuso (+10 horas)';
+GO
+
+-- Exibe a configuração atual idioma e o primeiro dia da semana --
+SELECT @@LANGUAGE  AS 'Idioma Utilizado',
+       @@DATEFIRST AS 'Primeiro dia da semana';
+GO
+
+-- Demostra a utilização do comando SELECT... CASE --
+SELECT @@LANGUAGE  AS 'Idioma Utilizado',
+    CASE
+        WHEN @@DATEFIRST = 1 THEN 'Segundo-Feira'
+        WHEN @@DATEFIRST = 2 THEN 'Terça-Feira'
+        WHEN @@DATEFIRST = 3 THEN 'Quarta-Feira'
+        WHEN @@DATEFIRST = 4 THEN 'Quinta-Feira'
+        WHEN @@DATEFIRST = 5 THEN 'Sexta-Feira'
+        WHEN @@DATEFIRST = 6 THEN 'Sabado'
+        WHEN @@DATEFIRST = 7 THEN 'Domingo'
+    END AS 'Primeiro Dia da semana';
+GO
+
+-- Exibe os idiomas disponiveis --
+SELECT langid       AS 'Id do idioma',
+       dateformat   AS 'Formato de ddata',
+       datefirst    AS 'Primeiro dia da semana',
+       name         AS 'Nome do idioma',
+       alias        AS 'Nome alternativo',
+       months       AS 'Nome dos meses',
+       shortmonths  AS 'Abreviação dos meses',
+       days         AS 'Nome dos dias'
+FROM sys.syslanguages
+WHERE alias IN ('English','Brazilian','German','Japonese','Russian');
+GO

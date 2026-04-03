@@ -290,3 +290,7 @@ SELECT langid       AS 'Id do idioma',
 FROM sys.syslanguages
 WHERE alias IN ('English','Brazilian','German','Japonese','Russian');
 GO
+
+-- expecificações de um idioma --
+Exec SP_HELPLANGUAGE [Brazilian];
+GO

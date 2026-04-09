@@ -294,3 +294,121 @@ GO
 -- expecificações de um idioma --
 Exec SP_HELPLANGUAGE [Brazilian];
 GO
+
+---------------------------
+-- estilo de data e hora --
+---------------------------
+
+-- Define o idioma a ser utilizado --
+SET LANGUAGE Brazilian;
+GO
+
+-- declara uma variavel para armazenar a data atual --
+DECLARE @data DATETIME;
+
+-- atribui o valor da data atual --
+SET @data = GETDATE();
+
+-- Exibe as informações da data --
+SELECT @@LANGUAGE  AS 'Idioma Utilizado',
+       @data            AS 'Data Atual',
+       DATEPART(DAY,@data)     AS 'Dia do mês',
+       DATENAME(DW, @data)     AS 'Dia da semana',
+       DATEPART(MONTH, @data)  AS 'Mês',
+       DATENAME(MONTH, @data)  AS 'Nome do mês',
+       DATEPART(YEAR, @data)   AS 'Ano',
+       DATENAME(DW,@data)      AS 'Dia da semana',
+       DATENAME(WK, @data)     AS 'Semana do Ano',
+       DATENAME(M, @data)      AS 'Nome do mês',
+       DATENAME(D, @data)      AS 'Dia do mês',
+       DATENAME(DY, @data)     AS 'Dia do ano';
+GO
+
+
+-- verificação de validez de data --
+SET DATEFORMAT DMY;
+GO
+
+IF ISDATE('20/01/2015 00:10:50.000') = 1
+    PRINT 'Data válida!';
+ELSE
+    PRINT 'Data inválida!';
+GO
+
+-- Exemplo de teclados --
+SELECT ASCII('A')     AS 'ASCII: A',
+       UNICODE('A')   AS 'UNICODE: A',
+       CHAR(65)      AS 'CHAR: 65',
+       NCHAR(65)     AS 'NCHAR: 65',
+       ASCII(N'私')    AS 'ASCII: 私',
+       UNICODE(N'私')  AS 'UNICODE: 私',
+       CHAR(31169)   AS 'CHAR: 31169',
+       NCHAR(31169)  AS 'NCHAR: 31169',
+       CHARINDEX('S', 'Microsoft SQL') AS 'CHARINDEX: S',
+       CHARINDEX('SQL', 'Microsoft SQL') AS 'CHARINDEX: SQL';
+GO
+
+-- Uso do SPACE QUOTENAME STR E LEN --
+SELECT 'Paulo' + 'Giovani'             AS 'SPACE 1',
+       'Paulo' + ' ' + 'Giovani'       AS 'SPACE 2',
+       'Paulo' + SPACE(10) + 'Giovani' AS 'SPACE 3',
+       QUOTENAME('Paulo Giovani', '{') AS 'QUOTENAME 1',
+       QUOTENAME('Paulo Giovani', '"') AS 'QUOTENAME 2',
+       QUOTENAME('Paulo Giovani', '[') AS 'QUOTENAME 3',
+       STR(100)                        AS 'STR 1',
+       STR(100.0)                      AS 'STR 2',
+       STR(100.45, 6, 2)               AS 'STR 3',
+       LEN('Paulo Giovani')            AS 'LEM 1';
+GO
+
+-- PATINDEX --
+SELECT PATINDEX('soft', 'Microsoft SQL')   AS 'PATINDEX 1',
+       PATINDEX('%soft%', 'Microsoft SQL') AS 'PATINDEX 2';
+GO
+
+-- SOUNDEX e DIFFERENCE --
+SELECT SOUNDEX('Paulo')            AS 'SOUNDEX: Paulo',
+       SOUNDEX('Paul')             AS 'SOUNDEX: Paul',
+       SOUNDEX('Cris')             AS 'SOUNDEX: Cris',
+       DIFFERENCE('Paulo', 'Paul') AS 'DIFF 1',
+       DIFFERENCE('Paulo', 'Cris') AS 'DIFF 2';
+GO
+
+-- data em diferentes idiomas --
+DECLARE @d DATETIME = GETDATE();
+
+SELECT FORMAT(@d, 'D', 'en-US') AS 'Inglês Americano',
+       FORMAT(@d, 'D', 'en-gb') AS 'Inglês Britânico',
+       FORMAT(@d, 'D', 'de-de') AS 'Alemão',
+       FORMAT(@d, 'D', 'zh-cn') AS 'Chinês Simplificado',
+       FORMAT(@d, 'D', 'pt-br') AS 'Portugês Brasileiro';
+GO
+
+-- Exemplo Pratico --
+SELECT NomeAluno AS 'Nome do Aluno',
+       DataNasc  AS 'Data de Nascimento',
+       FORMAT(DataNasc, 'D', 'pt-br') AS 'Data de Nascimento'
+FROM ALUNOS;
+GO
+
+-- CONCAT STUF REVERSE e REPLICATE --
+SELECT CONCAT('Paulo', 'Giovani')                       AS 'CONCAT',
+       CONCAT('Rua','João XXIII, ','15','- São Paulo')  AS 'Endereço',
+       STUFF('Paulo Giovani', 2, 1, 'TEXTO')            AS 'STUFF',
+       REVERSE('Paulo Giovani')                         AS 'REVERSE',
+       REPLICATE('*', 10)                               AS 'REPLICATE 1',
+       'Paulo' + REPLICATE('.', 5) + ':' + '6666-6666'  AS 'REPLICATE 2';
+GO
+
+-- Exemplo Geral de MANIPULAÇÂO DE STRING --
+SELECT NomeAluno  AS 'Nome do Aluno',
+       DATEPART(DAY,DataNasc)     AS 'Dia',
+       DATENAME(DW, DataNasc)     AS 'Dia da semana',
+       DATENAME(M, DataNasc)      AS 'Nome do mês',
+       DATEPART(YEAR, DataNasc)   AS 'Ano',
+       CONCAT( DATENAME(DW,DataNasc),    ',',
+               DATEPART(DAY, DataNasc),  ' de ',
+               DATENAME(M, DataNasc),    ' de ',
+               DATEPART(YEAR, DataNasc), '.')  AS 'Data de Nascimento'
+FROM ALUNOS
+GO

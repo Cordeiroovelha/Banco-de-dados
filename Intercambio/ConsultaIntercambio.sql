@@ -412,3 +412,49 @@ SELECT NomeAluno  AS 'Nome do Aluno',
                DATEPART(YEAR, DataNasc), '.')  AS 'Data de Nascimento'
 FROM ALUNOS
 GO
+
+-- manipulação de string 2 --
+SELECT NomeAluno        AS 'Nome do aluno',
+       SUBSTRING(NomeAluno, 1, 1) AS 'Inicial',
+       LOWER(NomeAluno)           AS 'Minusculo',
+       UPPER(NomeAluno)           AS 'Maiusculo',
+       LEN(NomeAluno)             AS 'Quantidade de caracteres',
+       LEFT(NomeAluno, 3)         AS 'LEFT',
+       RIGHT(NomeAluno, 3)        AS 'RIGHT',
+       RIGHT(RTRIM(NomeAluno), 3) AS 'RTRIM', 
+       '    ' + NomeAluno         AS 'LTRIM 1',
+       LTRIM('    ' + NomeAluno)  AS 'LTRIM 2'
+FROM ALUNOS;
+GO
+
+-- CAST e CONVERT --
+DECLARE @valor AS DECIMAL(5,2) = 156.90;
+
+SELECT CAST(@valor AS CHAR(20))       AS 'CAST',
+       CONVERT(DECIMAL(10,5), @valor) AS 'CONVERT'
+GO
+
+-- EXEMPLO 02 --
+DECLARE @valor AS DECIMAL(5,2) = 156.90;
+
+SELECT CAST(@valor AS CHAR(20))       AS 'CAST 1',
+       CAST(@valor AS DECIMAL(10,5))  AS 'CAST 2',
+       CONVERT(CHAR(20), @valor)      AS 'CONVERT 2',
+       CONVERT(DECIMAL(10,5), @valor) AS 'CONVERT'
+GO
+
+-- EXEMPLO 03 --
+DECLARE @data AS DATE = '25/01/2024';
+
+SELECT CAST(@data AS CHAR(20))   AS 'CAST (PADRÃO)',
+       CONVERT(CHAR(20), @data, 101)  AS 'CONVERT (usa) mm/dd/yyyy',
+       CONVERT(CHAR(20), @data, 140)  AS 'CONVERT (pt-br) dd/mm/aaaa',
+       CONVERT(CHAR(20), @data)  AS 'CONVERT (japão) yyyy/mm/dd'
+GO
+
+-- TRY_CONVERT TRY_PARSE --
+DECLARE @data AS CHAR(10) = '25/01/2024';
+
+
+
+

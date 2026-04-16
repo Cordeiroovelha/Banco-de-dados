@@ -454,7 +454,171 @@ GO
 
 -- TRY_CONVERT TRY_PARSE --
 DECLARE @data AS CHAR(10) = '25/01/2024';
+--------------------------------
+-- Criação da tabela AERONAVE --
+--------------------------------
+CREATE TABLE AERONAVES(
+    -- IDENTITY faz um auto encremento
+    CodAeronave INT IDENTITY PRIMARY KEY,
+    Modelo VARCHAR(50) NOT NULL
+);
+GO
+
+-- Inserir valores na tabela --
+INSERT INTO AERONAVES VALUES
+    ('Boeing 707'),
+    ('Boeing 737'),
+    ('Boeing 747'),
+    ('Embraer ERJ-145'),
+    ('Vickers VC-10');
+GO
+
+SELECT * FROM AERONAVES;
+GO
+
+-- Permitir a insersão de valores de campo IDENTITY --
+SET IDENTITY_INSERT AERONAVES ON;
+GO
+
+-- Inserir com um Codigo especifico --
+INSERT INTO AERONAVES (CodAeronave, Modelo) VALUES
+    (6, 'Airbus A300');
+GO
+
+-- Desabilitar a insersão manual por  segurança --
+SET IDENTITY_INSERT AERONAVES OFF;
+GO
+
+--------------------------------
+-- Criação da tabela VEICULOS --
+--------------------------------
+CREATE TABLE VEICULOS (
+    -- IDENTITY começa com 1 e com o incremento de 10
+    Codigo INT IDENTITY(1,10) PRIMARY KEY,
+    Modelo VARCHAR(50) NOT NULL
+);
+GO
 
 
+-- Inserir Valores --
+INSERT INTO VEICULOS VALUES
+    ('ferrari'),
+    ('Camaro'),
+    ('Fusca');
+GO
 
+SELECT * FROM VEICULOS;
+GO
 
+-- Exibir o valor do incremento --
+SELECT IDENT_INCR('AERONAVES') AS 'Inc. AERONAVE',
+       IDENT_INCR('VEICULOS')  AS 'Inc. VEICULOS'
+GO
+
+-- ExIbir o ultimo valor incrementado --
+SELECT @@IDENTITY AS 'Ultimo IDENTITY',
+       IDENT_CURRENT('AERONAVES') AS 'IDENTITY (AERONAVES)',
+       IDENT_CURRENT('VEICULOS')  AS 'IDENTITY (VEICULOS)';
+GO
+
+-- Cria uma sequência que começa em 1, com incremento 1 --
+CREATE SEQUENCE Incrementa1 AS INT
+    START WITH 1
+    INCREMENT BY 1;
+GO
+
+-- Cria uma sequência que começa em 10, com incremento 100 --
+CREATE SEQUENCE Incrementa100 AS INT
+    START WITH 10
+    INCREMENT BY 100;
+GO
+
+-- Cria uma sequência que começa em 1000, com incremento -100 --
+CREATE SEQUENCE Incrementa1000 AS INT
+    START WITH 1000
+    INCREMENT BY -100;
+GO
+
+-- Criar uma sequencia com mais parametros --
+CREATE SEQUENCE IncrementaDecimal AS DECIMAL(3,0)
+    START WITH 125
+    INCREMENT BY 25
+    MINVALUE 100
+    MAXVALUE 200
+    CYCLE
+    CACHE 3;
+GO
+
+----------------------------------------
+-- Exibe as sequencias e seus valores --
+----------------------------------------
+SELECT * FROM sys.sequences;
+GO
+
+-- Melhor --
+SELECT name          AS 'Nome',
+       create_date   AS 'Data de Criação',
+       start_value   AS 'Valor Inicial',
+       increment     AS 'Incremento',
+       minimum_value AS 'Valor Minimo',
+       maximum_value AS 'Valor Maximo',
+       current_value AS 'Valor Atual'
+FROM sys.sequences;
+GO
+
+-- Exive o primeiro valor das sequencias --
+SELECT NEXT VALUE FOR Incrementa1          AS 'Incrementa1',
+       NEXT VALUE FOR Incrementa100        AS 'Incrementa100',
+       NEXT VALUE FOR Incrementa1000       AS 'Incrementa1000',
+       NEXT VALUE FOR IncrementaDecimar    AS 'IncrementaDecimal';
+GO
+
+-- Recupera o valor atual de uma sequencia --
+SELECT current_value AS 'Valor Atual'
+FROM sys.sequences
+WHERE name = 'Incrementa100';
+GO
+
+-- Tabela temporaria para teste de sequencias
+CREATE TABLE #TestaSequencia (
+    ID    INT,
+    Nome  CHAR(20)
+);
+GO
+
+-- Reinicia o valor de uma sequencia --
+ALTER SEQUENCE Incrementa100
+    RESTART WITH 10;
+GO
+
+INSERT INTO #TestaSequencia (ID, Nome) VALUES
+    (NEXT VALUE FOR Incrementa100, 'Ana'),
+    (NEXT VALUE FOR Incrementa100, 'Maria'),
+    (NEXT VALUE FOR Incrementa100, 'João');
+GO
+
+SELECT * FROM #TestaSequencia;
+GO
+
+-- Remove a sequencia criada --
+DROP SEQUENCE Incrementa100;
+GO
+
+-- Verifica se realmente foi excluido --
+INSERT INTO #TestaSequencia (ID, Nome) VALUES
+    (NEXT VALUE FOR Incrementa100, 'José');
+GO
+
+-----------------------
+-- Declara variaveis --
+-----------------------
+DECLARE @nome AS VARCHAR(100);
+
+SET @nome = 'Carlos Pereira';
+
+SELECT CodAluno  AS 'Codigo',
+       NomeAluno AS 'Nome',
+       Endereco  AS 'Endereço'
+FROM ALUNOS
+WHERE NomeAluno LIKE @nome;
+GO

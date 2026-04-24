@@ -612,13 +612,152 @@ GO
 -----------------------
 -- Declara variaveis --
 -----------------------
-DECLARE @nome AS VARCHAR(100);
+DECLARE @nome AS VARCHAR(100) = 'Carlos Pereira';
 
-SET @nome = 'Carlos Pereira';
-
-SELECT CodAluno  AS 'Codigo',
-       NomeAluno AS 'Nome',
+SELECT CodAluno AS 'Codigo',
+       NomeAluno AS 'Nome do Aluno',
        Endereco  AS 'Endereço'
 FROM ALUNOS
 WHERE NomeAluno LIKE @nome;
+GO
+
+-- Atribuição  de colunas --
+DECLARE @row AS INT;
+
+SET @row = (SELECT COUNT(*) FROM VIAGENS);
+
+SELECT @row AS 'Total de Viagens';
+GO
+
+-- IF ELSE --
+DECLARE @A AS INT = 10,
+        @B AS INT = 100,
+        @maior AS INT;
+
+IF @A > @B
+    SET @maior = @A;
+ELSE
+    SET @maior = @B;
+
+PRINT 'O maior valor: ' + CAST(@maior AS VARCHAR);
+GO
+
+-- Par e Impar --
+DECLARE @numero AS INT = 240;
+
+IF ((@numero % 2) = 0)
+    PRINT 'O numero ' + CAST(@numero AS VARCHAR) + ' é par!';
+ELSE
+    PRINT 'O numero ' + CAST(@numero AS VARCHAR) + ' é impar!';
+GO
+
+-- CASE --
+SELECT CodAluno AS 'Codigo',
+       NomeAluno AS 'Nome do Aluno',
+       Endereco  AS 'Endereço',
+       Genero    AS 'Genero',
+       CASE Genero
+            WHEN 'M' THEN 'Homem'
+            WHEN 'F' THEN 'Mulher'
+            ELSE 'Não declarado'
+       END AS 'Homem | Mulher'
+FROM ALUNOS;
+GO
+
+-- WHILE --
+DECLARE @i AS INT;
+SET @i = 1;
+
+WHILE @i <= 10
+    BEGIN
+        PRINT CAST(@i AS CHAR);
+        SET @i = @i + 1;
+    END;
+GO
+
+-- Tabuada usando WHILE --
+DECLARE @quantidade AS INT = 5,
+        @total AS INT = 1,
+        @contador AS INT,
+        @limite AS INT = 5;
+
+WHILE @total <= @quantidade
+    BEGIN
+        PRINT 'Tabuada do ' + CAST(@total AS VARCHAR(5));
+        PRINT REPLICATE('-', 13);
+        SET @contador = 0;
+        WHILE @contador <= @limite
+            BEGIN
+                PRINT CAST(@total AS VARCHAR(5)) + ' X ' 
+                    + CAST(@contador AS VARCHAR(5)) + ' = '
+                    + CAST((@total * @contador) AS VARCHAR(5));
+                        SET @contador += 1;
+            END;
+        SET @total += 1;
+        PRINT '';
+    END;
+GO
+
+-----------------------
+-- Stored Procedures --
+-----------------------
+SELECT name
+FROM sys.tables;
+GO
+
+-- Criação de um procedimento --
+CREATE PROCEDURE AloMundo
+AS
+    PRINT 'Alô Mundo!';
+GO
+
+EXECUTE AloMundo;
+GO
+
+-- Procedimento Alunos Homens --
+CREATE PROCEDURE uspAlunosMasculinos
+AS
+    Select CodAluno   AS 'Codigo do Aluno',
+           NomeAluno  AS 'Nome do Aluno',
+           DataNasc   AS 'Data de Nascimento',
+           Endereco   AS 'Endereço',
+           Telefone,
+           Genero     AS 'Genero do Aluno',
+           PaisOrigem AS 'Nacionalidade',
+           CodViagem  AS 'Codigo da Viagem'
+FROM ALUNOS
+WHERE Genero = 'M';
+GO
+
+EXECUTE uspAlunosMasculinos;
+GO
+
+-- Informaçoes sobre os procedimentos --
+SELECT * FROM sys.procedures;
+GO
+
+SELECT name      AS 'Procedimentos',
+       create_date AS 'Data de Criação',
+       modify_date AS 'Data de Alteração'
+FROM sys.procedures;
+GO
+
+-- Alterear um procedimento --
+ALTER PROCEDURE AloMundo
+AS
+    PRINT 'Hello World!';
+GO
+
+EXECUTE AloMundo;
+GO
+
+-- Exibe dados do diretorio C:\ --
+EXEC XP_SUBDIRS 'C:\';
+GO
+
+-- Verifica a Existencia de um Arquivo --
+EXECUTE XP_FILEEXIST '';
+
+-- Lista de procedimentos do sistema --
+EXECUTE sp_helpextendedproc;
 GO

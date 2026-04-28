@@ -445,3 +445,137 @@ GO
 EXECUTE uspAlunosMasculinos;
 GO
 
+-- procedimento passando parametro --
+CREATE PROCEDURE uspSaudacao
+    @nome VARCHAR(200)
+AS PRINT 'Ola ' + @nome + '!';
+GO
+
+EXEC uspSaudacao 'Paulo';
+EXEC uspSaudacao 'Cris';
+GO
+
+-- Procedimento retornando um valor --
+CREATE PROCEDURE uspSoma
+    @valor1 INT,
+    @valor2 INT,
+    @soma INT OUTPUT
+AS
+    SET @soma = @valor1 + @valor2;
+GO
+
+DECLARE @saida INT;
+EXEC uspSoma 100, 50, @saida OUTPUT;
+PRINT @saida
+GO
+
+-- retorna um pais e seu codigo --
+CREATE PROCEDURE uspDescobreCodigoPais
+    @Pais VARCHAR(255)
+AS 
+    SET NOCOUNT ON;
+    SELECT CodPais  AS 'Codigo',
+           NomePais AS 'Pais'
+    FROM PAISES
+    WHERE NomePais = @Pais;
+    SET NOCOUNT OFF;
+GO
+
+EXEC uspDescobreCodigoPais 'Brasil';
+EXEC uspDescobreCodigoPais 'Japão';
+EXEC uspDescobreCodigoPais 'Turquia';
+GO
+
+-- Informa informaçoes de paises com um idioma --
+CREATE PROCEDURE uspInfoIdiomaPais
+    @idioma VARCHAR(50)
+AS
+    SET NOCOUNT ON;
+    SELECT * FROM PAISES
+    WHERE IdiomaPais LIKE ('%' + @IDIOMA + '%');
+    SET NOCOUNT OFF;
+GO
+
+EXEC uspInfoIdiomaPais 'Português';
+EXEC uspInfoIdiomaPais 'hin';
+GO
+
+-- Dados dos aulos --
+CREATE PROCEDURE uspBuscaDadosAlunos
+    @nomeAluno AS VARCHAR(20)
+AS
+    SET NOCOUNT ON;
+    SELECT VIAGENS.CodViagem                    AS 'Código da Viagem',
+           ALUNOS.NomeAluno                     AS 'Nome',
+           ALUNOS.Telefone,
+           ALUNOS.Genero                        AS 'Gênero',
+           (SELECT NomePais FROM PAISES 
+           WHERE CodPais = ALUNOS.PaisOrigem)   AS 'Origem',
+           (SELECT NomePais FROM PAISES
+           WHERE CodPais = VIAGENS.PaisDestino) AS 'Destino',
+           VIAGENS.DataSaida                    AS 'Data de Saída',
+           VIAGENS.DataRetorno                  AS 'Data de Retorno',
+           VIAGENS.Valor                        AS 'Preço da Viagem R$'
+           FROM ALUNOS INNER JOIN VIAGENS
+                ON ALUNOS.CodAluno = VIAGENS.CodViagem
+           WHERE ALUNOS.NomeAluno LIKE '%' + @nomeAluno + '%'
+           ORDER BY ALUNOS.NomeAluno, VIAGENS.PaisDestino;
+    SET NOCOUNT OFF;
+GO
+
+EXEC uspBuscaDadosAlunos 'Ana';
+EXEC uspBuscaDadosAlunos 'P';
+EXEC uspBuscaDadosAlunos 'Silva';
+GO
+
+-- Informaçoes sobre o procedure --
+EXEC SP_HELP uspBuscaDadosAlunos;
+GO
+
+-- Procedimento volta o maior valor --
+CREATE PROCEDURE uspAchaMaior
+    @valor1 FLOAT,
+    @valor2 FLOAT
+AS
+    DECLARE @maior FLOAT;
+
+    IF (@valor1  > @valor2)
+        SET @maior = @valor1;
+    ELSE
+        SET @maior = @valor2;
+    PRINT 'Maior valor entre ' + CAST(@valor1 AS VARCHAR) +
+          ' e ' + CAST(@valor2 AS VARCHAR) +
+          ' é ' + CAST(@maior AS VARCHAR);
+GO
+
+EXEC uspAchaMaior 60, 70;
+EXEC uspAchaMaior 60, 60.1;
+GO
+
+-- Conta a quantidade que o idioma aparece --
+CREATE PROCEDURE uspCOntaIdiomas
+    @idioma VARCHAR(50)
+AS
+    DECLARE @mensagemOK VARCHAR(100)
+    DECLARE @mensagemErro VARCHAR(100);
+    DECLARE @total INT
+
+    SET @mensagemOK = 'Quantidade de registros 
+    encontrados para o idioma ' + @idioma + ' : ';
+    SET @mensagemErro = 'Nenhuma ocorrencia com o idioma ' +
+    @idioma + '!';
+
+    SET @total = (SELECT COUNT(*) FROM PAISES 
+    WHERE IdiomaPais LIKE ('%' + @idioma + '%'));
+
+    IF (@total > 0)
+        PRINT @mensagemOK + CAST(@total AS VARCHAR);
+    ELSE
+        PRINT @mensagemErro;
+GO
+
+EXEC uspCOntaIdiomas 'Inglês';
+EXEC uspCOntaIdiomas 'Japonês';
+EXEC uspCOntaIdiomas 'Malgaxe';
+EXEC uspCOntaIdiomas 'Latin';
+GO

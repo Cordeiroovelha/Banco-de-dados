@@ -719,3 +719,85 @@ FROM ALUNOS A INNER JOIN VIAGENS V
     ON A.CodAluno = V.CodViagem;
 GO
 
+-- Funçao que recebe a sigla de um pais e retorna o nome --
+CREATE FUNCTION DescobreNomePais (@sigla CHAR(3))
+    RETURNS VARCHAR(50)
+AS
+    BEGIN
+        DECLARE @resposta VARCHAR(50);
+        SET @resposta = (
+            SELECT NomePais FROM PAISES
+            WHERE CodPais = @sigla);
+        RETURN @resposta;
+    END
+GO
+
+SELECT dbo.DescobreNomePais('BRA') AS 'Pais',
+       dbo.DescobreNomePais('CHN') AS 'Pais',
+       dbo.DescobreNomePais('RUS') AS 'Pais'
+GO
+
+SELECT A.CodAluno    AS 'Codigo Aluno',
+       A.NomeAluno   AS 'Nome Aluno',
+       A.Genero      AS 'Genero Aluno',
+       A.Endereco    AS 'Endereço Aluno',
+       A.PaisOrigem  AS 'Codigo da Origem Aluno',
+       dbo.DescobreNomePais(A.PaisOrigem) AS 'Origem',
+       V.PaisDestino AS 'Codigo do Destino Aluno',
+       dbo.DescobreNomePais(V.PaisDestino) AS 'Origem',
+       V.Valor       AS 'Valor da viagem'
+FROM ALUNOS A INNER JOIN VIAGENS V
+    ON A.CodAluno = V.CodViagem;
+GO
+
+-- Função que retorna os dados das viagens para um pais --
+CREATE FUNCTION ExibeViagensPais (@sigla CHAR(3))
+    RETURNS TABLE
+AS
+    RETURN
+        SELECT V.CodViagem AS 'Codigo da Viagem',
+        P.NomePais + ' (' + V.PaisDestino + ') ' AS 'Destino',
+        P.IdiomaPais       AS 'Idioma',
+        V.DataSaida        AS 'Data de Saida',
+        V.DataRetorno      AS 'Data de Retorno',
+        V.Valor            AS 'Valor'
+        FROM PAISES P INNER JOIN VIAGENS V
+            ON P.CodPais = V.PaisDestino
+        WHERE V.PaisDestino = @sigla;
+GO
+
+SELECT * FROM dbo.ExibeViagensPais('USA');
+GO
+
+SELECT [Codigo da VIagem],
+       Destino,
+       [Valor]
+FROM dbo.ExibeViagensPais('MEX');
+GO
+
+-- Função que retorna dados de viagens futuras --
+CREATE FUNCTION ViagensFuturas (@data DATE)
+    RETURNS @viagens_futuras TABLE (Codigo INT, SAIDA DATE,
+Retorno DATE, Destino VARCHAR(50))
+AS
+    BEGIN
+        INSERT INTO @viagens_futuras
+        SELECT V.CodViagem, V.DataSaida, V.DataRetorno, P.NomePais
+        FROM VIAGENS V INNER JOIN PAISES P
+            ON V.PaisDestino = P.CodPais
+        WHERE V.DataSaida > @data;
+        RETURN;
+    END;
+GO
+
+SELECT * FROM dbo.ViagensFuturas('31/12/2010')
+GO
+
+-- Informações sobre as UDFs em uso --
+SELECT name       AS 'Nome da função',
+       definition AS 'Definição',
+       type_desc  AS 'Tipo'
+FROM sys.sql_modules M INNER JOIN sys.objects O
+    ON M.object_id = O.object_id
+WHERE type_desc LIKE '%function%';
+GO

@@ -183,3 +183,49 @@ GO
 SELECT * FROM AUDITORIA_ITENS
 GO
 
+-- Atualiza um trigger --
+CREATE TRIGGER trg_AUDITORIA_ITENS_DELETA_ATUALIZA ON AUDITORIA_ITENS
+	INSTEAD OF DELETE, UPDATE
+AS
+	BEGIN
+		PRINT 'Você não tem permissão para excluir dados da tabela AUDITORIA_ITENS'
+		PRINT 'Procure o responsavel pela aplicação'
+	END
+GO
+
+DELETE FROM AUDITORIA_ITENS
+GO
+
+SELECT name FROM sys.triggers
+GO
+
+-- Trigger de permissão de criação de tabela --
+CREATE TRIGGER trg_CONTROLE ON DATABASE
+	FOR CREATE_TABLE
+AS
+	PRINT 'Tentativa de criação de uma nova tabela!'
+	RAISERROR ('A criação de novas tabelas não é permitida nesse banco', 16, 1)
+	ROLLBACK
+GO
+
+CREATE TABLE CATEGORIA (
+	ID INT PRIMARY KEY
+	Nome CHAR(20)
+)
+GO
+
+-- remover banco de dados --
+USE master
+GO
+
+DROP DATABASE QUITANDA
+GO
+
+-- Remove o diretorio onde o banco foi criado --
+DECLARE @comando AS NVARCHAR(200)
+DECLARE @diretorio AS NVARCHAR(200)
+SET @diretorio = 'C:\Documentos\BANCO-DE-DADOS\Quintanda'
+SET @comando = N'RMDIR ' + @diretorio
+EXEC MASTER.DBO.XP_CMDSHELL @comando, no_output
+GO
+

@@ -213,3 +213,126 @@ CREATE TABLE DADOS_CURSOR (
     Sobrenome CHAR(30)
 )
 GO
+
+-- RTRIM --
+-- Remove espaçoes em Branco --
+DECLARE cur_autores CURSOR
+FOR
+    SELECT RTRIM(Sobrenome),
+           RTRIM(Nome)
+    FROM AUTORES
+    WHERE Sobrenome LIKE 'M%'
+    ORDER BY Sobrenome, Nome
+GO
+
+DECLARE @sobrenome VARCHAR(30),
+        @nome      VARCHAR(20)
+
+OPEN cur_autores
+FETCH FROM cur_autores
+    INTO @nome, @sobrenome
+SET NOCOUNT ON
+WHILE @@FETCH_STATUS = 0
+    BEGIN
+        PRINT 'Autor: ' + @nome + ' ' + @sobrenome
+        INSERT INTO DADOS_CURSOR VALUES
+        (@nome, @sobrenome)
+        FETCH NEXT FROM cur_autores
+            INTO  @sobrenome, @nome
+    END
+GO
+
+SET NOCOUNT OFF
+CLOSE cur_autores
+DEALLOCATE cur_autores
+GO
+
+SELECT * FROM DADOS_CURSOR
+GO
+
+-- Tabela LIVROS --
+CREATE TABLE LIVROS (
+    Codigo   INT PRIMARY KEY,
+    Titulo   VARCHAR(15),
+    Situacao VARCHAR(12)
+);
+GO
+
+INSERT INTO LIVROS VALUES
+ (1, 'Livro A', 'Disponivel'),
+ (2, 'Livro B', 'Disponivel'),
+ (3, 'Livro C', 'Disponivel'),
+ (4, 'Livro D', 'Disponivel'),
+ (5, 'Livro E', 'Disponivel');
+GO
+
+SELECT * FROM LIVROS
+GO
+
+-- Tabela EMPRESTIMO --
+CREATE TABLE EMPRESTIMO (
+    Cod_Emprestimo INT PRIMARY KEY,
+    Cod_Livro INT FOREIGN KEY REFERENCES LIVROS(Codigo)
+);
+GO
+
+INSERT INTO EMPRESTIMO VALUES
+    (1,1),
+    (2,2),
+    (3,3);
+GO
+
+SELECT * FROM EMPRESTIMO;
+GO
+
+SELECT E.Cod_Emprestimo AS 'Codigo do Emprestimo',
+       E.Cod_Livro      AS 'Codigo do Livro',
+       L.Titulo         AS 'Titulo'
+FROM EMPRESTIMO E INNER JOIN LIVROS L
+    ON L.Codigo = E.Cod_Emprestimo
+GO
+
+-- PROCEDURE --
+-- Procedimento para alterar a disponibilidade de um ou mais Livro--
+CREATE PROCEDURE ATUALIZA_LIVROS
+AS
+    SET NOCOUNT ON
+    DECLARE cur_emprestimos CURSOR
+    FOR 
+        SELECT Cod_Livro FROM EMPRESTIMO
+    DECLARE @cod_emprestado INT
+    OPEN cur_emprestimos
+    FETCH FROM cur_emprestimos INTO @cod_emprestado
+    UPDATE LIVROS
+        SET Situacao = 'Emprestado'
+        WHERE Codigo = @cod_emprestado
+    WHILE @@FETCH_STATUS = 0
+        BEGIN
+            FETCH NEXT FROM cur_emprestimos INTO @cod_emprestado
+            UPDATE LIVROS
+                SET Situacao = 'Emprestado'
+                WHERE Codigo = @cod_emprestado
+        END
+    CLOSE cur_emprestimos
+    DEALLOCATE cur_emprestimos
+    SET NOCOUNT OFF
+GO
+
+SELECT Codigo   AS 'Codigo',
+       Titulo   AS 'Titulo',
+       Situacao AS 'Situação'
+FROM LIVROS;
+GO
+
+EXEC ATUALIZA_LIVROS;
+GO
+
+INSERT INTO EMPRESTIMO VALUES (4,5)
+GO
+
+SELECT E.Cod_Emprestimo AS 'Codigo do Emprestimo',
+       E.Cod_Livro      AS 'Codigo do Livro',
+       L.Titulo         AS 'Titulo'
+FROM EMPRESTIMO E INNER JOIN LIVROS L
+    ON L.Codigo = E.Cod_Livro
+GO

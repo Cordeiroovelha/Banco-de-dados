@@ -33,6 +33,7 @@ CREATE TABLE CONSULTA(
     ID_Paciente INT,
     ID_Medico   INT,
     Data        DATE,
+    Situacao    VARCHAR(15),
     Ala         VARCHAR(50),
     FOREIGN KEY (Ala) REFERENCES ALA(Nome),
     FOREIGN KEY (ID_Paciente) REFERENCES PACIENTES(ID),
@@ -100,19 +101,19 @@ INSERT INTO MEDICO VALUES
     (10, 'Dra. Patricia Mendes', 'Enfermaria Geral', 'Ortopedia', 1);
 
 INSERT INTO CONSULTA VALUES
---  (ID, ID_Paciente, ID_Medico, Data, Ala)
-    (1, 3, 2, '2024-11-20', 'Emergencia'),
-    (2, 5, 3, '2024-11-20', 'UTI'),
-    (3, 1, 5, '2024-11-21', 'Emergencia'),
-    (4, 9, 7, '2024-11-21', 'Enfermaria Geral'),
-    (5, 4, 6, '2024-11-22', 'Cirurgia'),
-    (6, 15, 3, '2024-11-22', 'UTI'),
-    (7, 2, 2, '2024-11-23', 'Emergencia'),
-    (8, 7, 5, '2024-11-23', 'Emergencia'),
-    (9, 8, 1, '2024-11-24', 'Pediatria'),
-    (10, 13, 4, '2024-11-24', 'Pediatria'),
-    (11, 6, 2, '2024-11-25', 'Emergencia'),
-    (12, 10, 5, '2024-11-25', 'Emergencia'),
-    (13, 11, 9, '2024-11-26', 'Cirurgia'),
-    (14, 12, 4, '2024-11-26', 'Pediatria'),
-    (15, 14, 10, '2024-11-27', 'Enfermaria Geral');
+--  (ID, ID_Paciente, ID_Medico, Data, Situação, Ala)
+    (1, 3, 2, '2024-11-20', 'Atendido',  'Emergencia'),
+    (2, 5, 3, '2024-11-20', 'Atendido', 'UTI'),
+    (3, 1, 5, '2024-11-21','Em atendimento', 'Emergencia'),
+    (4, 9, 7, '2024-11-21', 'Atendido', 'Enfermaria Geral'),
+    (5, 4, 6, '2024-11-22', 'Atendido', 'Cirurgia'),
+    (6, 15, 3, '2024-11-22','Em atendimento', 'UTI'),
+    (7, 2, 2, '2024-11-23','Em atendimento', 'Emergencia'),
+    (8, 7, 5, '2024-11-23', 'Em atendimento','Emergencia'),
+    (9, 8, 1, '2024-11-24','Atendido', 'Pediatria'),
+    (10, 13, 4, '2024-11-24','Em atendimento', 'Pediatria'),
+    (11, 6, 2, '2024-11-25','Atendido', 'Emergencia'),
+    (12, 10, 5, '2024-11-25','Em atendimento', 'Emergencia'),
+    (13, 11, 9, '2024-11-26','Atendido', 'Cirurgia'),
+    (14, 12, 4, '2024-11-26','Em atendimento', 'Pediatria'),
+    (15, 14, 10, '2024-11-27','Em atendimento', 'Enfermaria Geral');

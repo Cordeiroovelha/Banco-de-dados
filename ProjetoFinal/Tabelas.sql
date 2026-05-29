@@ -7,7 +7,6 @@ ELSE
     USE Hospital;
 GO
 
-
 CREATE TABLE PACIENTES(
 	ID INT PRIMARY KEY,
 	Nome		      VARCHAR(50),
@@ -16,28 +15,6 @@ CREATE TABLE PACIENTES(
 	TipoSanguinio     CHAR(3),
 	Prioridade        INT,
 	Descricao	      VARCHAR(250)
-);
-
-CREATE TABLE MEDICO(
-    ID INT PRIMARY KEY,
-    Nome           VARCHAR(50),
-    Ala            VARCHAR(50),
-    Especialidade  VARCHAR(50),
-    Hospital       INT,
-    FOREIGN KEY (Hospital) REFERENCES HOSPITAL(ID),
-    FOREIGN KEY (Ala) REFERENCES ALA(Nome)
-);
-
-CREATE TABLE CONSULTA(
-    ID INT PRIMARY KEY,
-    ID_Paciente INT,
-    ID_Medico   INT,
-    Data        DATE,
-    Situacao    VARCHAR(15),
-    Ala         VARCHAR(50),
-    FOREIGN KEY (Ala) REFERENCES ALA(Nome),
-    FOREIGN KEY (ID_Paciente) REFERENCES PACIENTES(ID),
-    FOREIGN KEY (ID_Medico) REFERENCES MEDICO(ID)    
 );
 
 CREATE TABLE HOSPITAL(
@@ -56,6 +33,29 @@ CREATE TABLE ALA(
     Procedimento VARCHAR(250),
     FOREIGN KEY (ID_Hospital) REFERENCES HOSPITAL(ID)
 );
+
+CREATE TABLE MEDICO(
+    ID INT PRIMARY KEY,
+    Nome           VARCHAR(50),
+    Ala            INT,
+    Especialidade  VARCHAR(50),
+    Hospital       INT,
+    FOREIGN KEY (Hospital) REFERENCES HOSPITAL(ID),
+    FOREIGN KEY (Ala) REFERENCES ALA(ID)
+);
+
+CREATE TABLE CONSULTA(
+    ID INT PRIMARY KEY,
+    ID_Paciente INT,
+    ID_Medico   INT,
+    Data        DATE,
+    Situacao    VARCHAR(15),
+    Ala         INT,
+    FOREIGN KEY (Ala) REFERENCES ALA(ID),
+    FOREIGN KEY (ID_Paciente) REFERENCES PACIENTES(ID),
+    FOREIGN KEY (ID_Medico) REFERENCES MEDICO(ID)    
+);
+
 
 INSERT INTO PACIENTES VALUES
 --  (ID, Nome, Idade, contatoEmergencia, TipoSanguinio, Prioridade, Descricao)
@@ -89,31 +89,41 @@ INSERT INTO ALA VALUES
 
 INSERT INTO MEDICO VALUES
 --  (ID, Nome, Ala, Especialidade, Hospital)
-    (1, 'Dr. Augusto Manzano', 'Pediatria', 'Obstetrícia', 1),
-    (2, 'Dra. Carla Menezes', 'Emergencia', 'Clínica Médica', 1),
-    (3, 'Dr. Ricardo Franco', 'UTI', 'Medicina Intensiva', 1),
-    (4, 'Dra. Beatriz Lima', 'Pediatria', 'Pediatria Geral', 1),
-    (5, 'Dr. Sergio Castelo', 'Emergencia', 'Traumatologia', 1),
-    (6, 'Dra. Vivian Noronha', 'Cirurgia', 'Cirurgia Geral', 1),
-    (7, 'Dr. Otavio Rocha', 'Enfermaria Geral', 'Cardiologia', 1),
-    (8, 'Dra. Mariana Torres', 'UTI', 'Pneumologia', 1),
-    (9, 'Dr. Leonardo Campos', 'Cirurgia', 'Neurocirurgia', 1),
-    (10, 'Dra. Patricia Mendes', 'Enfermaria Geral', 'Ortopedia', 1);
+    (1, 'Dr. Augusto Manzano',   3, 'Obstetrícia', 1),
+    (2, 'Dra. Carla Menezes',    1, 'Clínica Médica', 1),
+    (3, 'Dr. Ricardo Franco',    2, 'Medicina Intensiva', 1),
+    (4, 'Dra. Beatriz Lima',     3, 'Pediatria Geral', 1),
+    (5, 'Dr. Sergio Castelo',    1, 'Traumatologia', 1),
+    (6, 'Dra. Vivian Noronha',   4, 'Cirurgia Geral', 1),
+    (7, 'Dr. Otavio Rocha',      5, 'Cardiologia', 1),
+    (8, 'Dra. Mariana Torres',   2, 'Pneumologia', 1),
+    (9, 'Dr. Leonardo Campos',   4, 'Neurocirurgia', 1),
+    (10, 'Dra. Patricia Mendes', 5, 'Ortopedia', 1);
 
 INSERT INTO CONSULTA VALUES
 --  (ID, ID_Paciente, ID_Medico, Data, Situação, Ala)
-    (1, 3, 2, '2024-11-20', 'Atendido',  'Emergencia'),
-    (2, 5, 3, '2024-11-20', 'Atendido', 'UTI'),
-    (3, 1, 5, '2024-11-21','Em atendimento', 'Emergencia'),
-    (4, 9, 7, '2024-11-21', 'Atendido', 'Enfermaria Geral'),
-    (5, 4, 6, '2024-11-22', 'Atendido', 'Cirurgia'),
-    (6, 15, 3, '2024-11-22','Em atendimento', 'UTI'),
-    (7, 2, 2, '2024-11-23','Em atendimento', 'Emergencia'),
-    (8, 7, 5, '2024-11-23', 'Em atendimento','Emergencia'),
-    (9, 8, 1, '2024-11-24','Atendido', 'Pediatria'),
-    (10, 13, 4, '2024-11-24','Em atendimento', 'Pediatria'),
-    (11, 6, 2, '2024-11-25','Atendido', 'Emergencia'),
-    (12, 10, 5, '2024-11-25','Em atendimento', 'Emergencia'),
-    (13, 11, 9, '2024-11-26','Atendido', 'Cirurgia'),
-    (14, 12, 4, '2024-11-26','Em atendimento', 'Pediatria'),
-    (15, 14, 10, '2024-11-27','Em atendimento', 'Enfermaria Geral');
+    (1, 3, 2, '2024-11-20', 'Atendido',  1),
+    (2, 5, 3, '2024-11-20', 'Atendido', 2),
+    (3, 1, 5, '2024-11-21','Em atendimento', 1),
+    (4, 9, 7, '2024-11-21', 'Atendido', 5),
+    (5, 4, 6, '2024-11-22', 'Atendido', 4),
+    (6, 15, 3, '2024-11-22','Em atendimento', 2),
+    (7, 2, 2, '2024-11-23','Em atendimento', 1),
+    (8, 7, 5, '2024-11-23', 'Em atendimento',1),
+    (9, 8, 1, '2024-11-24','Atendido', 3),
+    (10, 13, 4, '2024-11-24','Em atendimento', 3),
+    (11, 6, 2, '2024-11-25','Atendido', 1),
+    (12, 10, 5, '2024-11-25','Em atendimento', 1),
+    (13, 11, 9, '2024-11-26','Atendido', 4),
+    (14, 12, 4, '2024-11-26','Em atendimento', 3),
+    (15, 14, 10, '2024-11-27','Em atendimento', 5);
+
+SELECT * FROM PACIENTES;
+
+SELECT * FROM MEDICO;
+
+SELECT * FROM ALA;
+
+SELECT * FROM CONSULTA;
+
+SELECT * FROM HOSPITAL;

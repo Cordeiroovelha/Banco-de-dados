@@ -246,3 +246,128 @@ LEFT JOIN PACIENTES p ON c.ID_Paciente = p.ID
 LEFT JOIN ALA a ON m.Ala = a.ID
 GROUP BY m.ID, m.Nome, m.Especialidade, a.Nome
 ORDER BY TotalAtendimentos DESC, m.Nome;
+GO
+
+-- 16. procedimento chamado "uspCalcIdadePaciente" no qual 
+--     quando executado calcula a idade media de todos os pacientes da tabela "PACIENTE"
+
+CREATE PROCEDURE uspCalcIdadePacientes
+    @media DECIMAL(5,2) OUTPUT
+AS
+BEGIN
+    SELECT @media = AVG(Idade)
+    FROM PACIENTES;
+    SELECT @media as 'Idade Media';
+END;
+GO
+
+DECLARE @Media DECIMAL(5,2);
+EXEC uspCalcIdadePacientes @media = @Media OUTPUT;
+PRINT 'A idade média dos pacientes é: ' + CAST(@Media AS VARCHAR(10));
+
+
+-- 17. procedimento que mostre a capacidade das alas da tabela "ALA" 
+--     subtraindo do total a quantidade de consultas da tabela "CONSULTA" que estão acontecendo naquelas alas
+
+CREATE PROCEDURE uspCapacidadeDisponivelAlas
+AS
+BEGIN
+    SELECT 
+        a.ID AS 'ID_Ala',
+        a.Nome AS 'Nome da Ala',
+        a.Capacidade AS 'Capacidade Total',
+        COUNT(c.ID) AS 'Consultas Em Andamento',
+        (a.Capacidade - COUNT(c.ID)) AS 'Capacidade Disponivel'
+    FROM ALA a
+    LEFT JOIN CONSULTA c ON a.ID = c.Ala AND c.Situacao = 'Em atendimento'
+    GROUP BY a.ID, a.Nome, a.Capacidade
+    ORDER BY a.ID;
+END;
+GO
+
+EXEC uspCapacidadeDisponivelAlas;
+
+-- 18. procedimento que calcula a quantidade de consultas da tabela "CONSULTA" que cada medico participa
+
+CREATE PROCEDURE uspQuantConsultasPorMedico
+AS
+BEGIN
+    SELECT 
+        m.ID AS 'ID Medico',
+        m.Nome AS 'Nome do Medico',
+        m.Especialidade,
+        COUNT(c.ID) AS 'Total Consultas'
+    FROM MEDICO m
+    LEFT JOIN CONSULTA c ON m.ID = c.ID_Medico
+    GROUP BY m.ID, m.Nome, m.Especialidade
+    ORDER BY 'Total Consultas' DESC, m.Nome;
+END;
+
+EXEC uspQuantConsultasPorMedico;
+GO
+
+-- 19. trigger com o nome "TRG_ATUALIZA_CONSULTAS" no qual remove as consultas que estão com a situação "Atendido" 
+--     toda vez que algum novo dado for inserido na tabela "CONSULTA"
+CREATE TRIGGER TRG_ATUALIZA_CONSULTAS
+ON CONSULTA
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @QuantidadeRemovida INT;
+    
+    DELETE FROM CONSULTA
+    WHERE Situacao = 'Atendido';
+    
+    SET @QuantidadeRemovida = @@ROWCOUNT;
+    
+    IF @QuantidadeRemovida > 0
+    BEGIN
+        PRINT 'Trigger executado: ' + CAST(@QuantidadeRemovida AS VARCHAR(10)) + 
+              ' consulta(s) com situação "Atendido" foram removidas da tabela CONSULTA.';
+    END
+END;
+GO
+
+INSERT INTO CONSULTA (ID, ID_Paciente, ID_Medico, Data, Situacao, Ala)
+VALUES (20, 1, 2, GETDATE(), 'Em atendimento', 1);
+
+-- 20. Trigger que insere os dados de todas as consultas que foram realizadas em uma tabela
+--     de registro chamada "CONSULTA_LOG"
+
+CREATE TABLE CONSULTA_LOG (
+    ID_Registro INT IDENTITY(1,1) PRIMARY KEY,
+    ID_Consulta INT,
+    ID_Paciente INT,
+    ID_Medico INT,
+    Data_Consulta DATE,
+    Situacao VARCHAR(15),
+    Ala INT,
+    Data_Insercao DATETIME DEFAULT GETDATE()
+);
+GO
+
+CREATE TRIGGER TRG_REGISTRA_CONSULTAS_INSERT
+ON CONSULTA
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO CONSULTA_LOG (ID_Consulta, ID_Paciente, ID_Medico, Data_Consulta, Situacao, Ala)
+    SELECT 
+        ID, 
+        ID_Paciente, 
+        ID_Medico, 
+        Data, 
+        Situacao, 
+        Ala
+    FROM inserted;
+    
+    PRINT 'Trigger executado: Nova consulta registrada com sucesso!';
+END;
+GO
+
+INSERT INTO CONSULTA (ID, ID_Paciente, ID_Medico, Data, Situacao, Ala)
+VALUES (21, 1, 2, GETDATE(), 'Em atendimento', 1);

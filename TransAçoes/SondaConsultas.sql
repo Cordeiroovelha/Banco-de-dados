@@ -139,3 +139,98 @@ GO
 -- Mata uma sessão
 KILL 52
 GO
+
+-------------
+-- SCHEMAS --
+-------------
+-- Exibe os esquemas do banco de dados --
+SELECT * FROM sys.schemas
+GO
+
+-- Cria um esquema teste e atribui como proprietario o usuario DBO --
+CREATE SCHEMA TESTE AUTHORIZATION dbo
+GO
+
+-- Deçeta o esquema TESTE --
+DROP SCHEMA TESTE
+GO
+
+-- View dentro do esquema --
+CREATE SCHEMA TESTE AUTHORIZATION dbo
+  CREATE VIEW Todos_Clientes AS
+    SELECT CodCliente,
+		   NomeCliente,
+		   RendaMensal
+FROM CLIENTES
+GO
+
+-- Seleciona os campos do View  Todos_Clientes
+SELECT * FROM TESTE.Todos_Clientes
+GO
+
+-- O esquema não pode ser deletado caso haja elementos dentro dele --
+DROP VIEW TESTE.Todos_Clientes
+DROP SCHEMA TESTE
+GO
+
+-- Tabela de teste
+CREATE TABLE TESTE_PRODUTOS (
+	ID INT IDENTITY PRIMARY KEY,
+	Item VARCHAR(15)
+)
+GO
+
+INSERT INTO TESTE_PRODUTOS VALUES 
+	('Cenoura'),
+	('Cebola'),
+	('Sabão')
+GO
+
+-- Criação do esquema
+CREATE SCHEMA TESTE AUTHORIZATION dbo
+GO
+
+-- Modifica o esquema TESTE --
+-- Tranfere os dados da tabela para o esquema --
+ALTER SCHEMA TESTE
+	TRANSFER dbo.Teste_Produtos
+GO
+
+-- Falha pois a tabela esta dentro do esquema --
+SELECT * FROM TESTE_PRODUTOS
+GO
+
+-- Maneira Correta --
+SELECT * FROM TESTE.TESTE_PRODUTOS
+GO
+
+------------
+-- Logins --
+------------
+
+-- Exibe todos os logins do sistema --
+EXEC sp_helplogins
+GO
+
+-- Exive os logins existentes no servidor
+SELECT * FROM sys.server_principals
+GO
+
+-- Criar um Login SUPERMERCADO_SONDA
+CREATE LOGIN Supermercado_SONDA
+  WITH PASSWORD = 'Senha123'
+GO
+
+-- Altera as credenciais do login
+ALTER LOGIN Supermercado_SONDA
+	WITH DEFAULT_DATABASE = SONDA
+GO
+
+-- Habilita o Login
+ALTER LOGIN Supermercado_SONDA ENABLE
+GO
+
+-- Exibe informaçoes sobre o Login especifico
+EXEC sp_helplogins @LoginNamePattern = 'Supermercado_SONDA'
+GO
+

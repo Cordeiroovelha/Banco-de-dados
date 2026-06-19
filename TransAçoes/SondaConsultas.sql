@@ -231,6 +231,248 @@ ALTER LOGIN Supermercado_SONDA ENABLE
 GO
 
 -- Exibe informaçoes sobre o Login especifico
-EXEC sp_helplogins @LoginNamePattern = 'Supermercado_SONDA'
+EXEC sp_helplogins 
+  @LoginNamePattern = 'Supermercado_SONDA'
 GO
 
+-- 18/06
+-- Criação de Usuário e Permissão
+-- Cria o usuário CARREFULVIO_ADMIN
+CREATE USER SONDA_Admin
+FOR LOGIN Supermercado_SONDA
+GO
+
+-- Atribui permissão de leitura no banco de
+-- dados CARREFULVIO
+ALTER ROLE db_datareader
+  ADD MEMBER SONDA_Admin
+GO
+
+-- Atribui permissão de leitura no banco de
+-- dados CARREFULVIO
+ALTER ROLE db_datawriter
+  ADD MEMBER SONDA_Admin
+GO
+
+-- Exibe o usuário atual do banco de dados -> DBO
+SELECT CURRENT_USER AS 'Usuário Atual'
+GO
+
+-- Altera o usuário do banco de dados
+EXEC AS USER = 'SONDA_Admin'
+GO
+
+-- Exibe o usuário atual do banco de dados ->
+-- CARREFULVIO_ADMIN
+SELECT CURRENT_USER AS 'Usuário Atual'
+GO
+
+-- Exibe as permissões atribuídas ao usuário
+EXEC sp_helprotect NULL, SONDA_Admin
+GO
+
+-- Insere mais um cliente no banco de dados
+INSERT INTO CLIENTES VALUES
+  (12, 'Chuck Norris', 1000000,00)
+GO
+
+-- Lista os dados de todos os clientes
+SELECT * FROM CLIENTES
+GO
+
+-- Altera o usuário anterior ao atual do banco de dados
+REVERT
+GO
+
+-- Cria o usuário FULVIO. Ele pode selecionar
+-- inserir, deletar e atualizar
+CREATE USER Fulvio WITHOUT LOGIN
+GO
+
+-- Atribui permissões para o usuário FULVIO
+GRANT SELECT, INSERT, DELETE, UPDATE TO Fulvio
+GO
+
+-- Cria o usuário AOPA. Ele pode somente selecionar dados
+CREATE USER Aopa WITHOUT LOGIN
+GO
+
+-- Atribui permissões para o usuário AOPA
+GRANT SELECT TO Aopa
+GO
+
+-- Exibe informações sobre os 
+-- usuários existentes no servidor
+EXEC sp_helpuser
+GO
+
+-- 2. Exibe informações sobre os 
+-- usuários existentes no servidor
+SELECT * FROM sysusers
+GO
+
+-- 3. Exibe informações sobre os usuários 
+-- existentes no banco de dados
+SELECT name            AS 'Usuário',
+       authentication_type_desc AS
+'Tipo de Autenticação'
+FROM sys.database_principals
+WHERE type_desc = 'SQL_USER' AND
+      defaut_schema_name = 'dbo'
+GO
+
+-- Altera o usuário do banco de dados -> AOPA
+EXEC AS USER = 'Aopa'
+GO
+
+-- Exibe o usuário atual do banco de dados
+SELECT CURRENT_USER AS 'Usuário Atual'
+GO
+
+-- Exibe as permissões atribuídas ao usuário AOPA
+EXEC sp_helprotect NULL, Aopa
+GO
+
+-- Exibe os dados de todos os clientes
+SELECT * FROM CLIENTES
+GO
+
+-- Tentativa de inserção de um cliente.
+-- Gera um erro, pois o usuário AOPA não tem
+-- essa permissão.
+INSERT INTO CLIENTES VALUES
+  (13, 'Maria Cristina', 1500.00)
+GO
+
+-- Tentativa de remover todos os produtos.
+-- Gera um erro, pois o usuário AOPA não tem
+-- essa permissão.
+DELETE FROM PRODUTOS
+GO
+
+-- Altera o usuário anterior ao atual do banco de dados
+REVERT
+GO
+
+-- Altera o usuário do banco de dados -> FULVIO
+EXEC AS USER = 'Fulvio'
+GO
+
+-- Exibe o usuário atual do banco de dados
+SELECT CURRENT_USER AS 'Usuário Atual'
+GO
+
+-- Exibe as permissões atribuídas ao usuário -> FULVIO
+EXEC sp_helprotect NULL, Fulvio
+GO
+
+-- Lista os dados de todos os clientes
+SELECT * FROM CLIENTES
+GO
+
+-- Tentativa de inserção de um cliente.
+-- Gera um erro, pois o usuário FULVIO não tem
+-- essa permissão.
+INSERT INTO CLIENTES VALUES
+  (13, 'Maria Cristina', 1500.00)
+GO
+
+-- Lista os dados de todos os clientes
+SELECT * FROM CLIENTES
+GO
+
+-- Altera o usuário do banco de dados -> FULVIO
+REVERT
+GO
+
+-- Nega a permissão INSERT, para o usuário FULVIO.
+DENY INSERT ON CLIENTES TO Fulvio
+GO
+
+-- Altera o usuário do banco de dados -> FULVIO
+EXEC AS USER = 'Fulvio'
+GO
+
+-- Exibe as permissões atribuídas ao usuário -> FULVIO
+EXEC sp_helprotect NULL, Fulvio
+GO
+
+-- Tentativa de inserção de um novo cliente. Não
+-- funciona, pois a permissão para o usuário FULVIO
+-- inserir clientes foi negada.
+INSERT INTO CLIENTES VALUES
+  (14, 'Carlton Banks', 5000.00)
+GO
+
+-- Altera para o usuário anterior ao atual -> DBO
+REVERT
+GO
+
+-- Remove a permissão DENY, relativa ao
+-- comando INSERT, atribuida ao usuário FULVIO
+REVOKE INSERT ON CLIENTES TO Fulvio
+GO
+
+-- Altera o usuário do banco de dados -> FULVIO
+EXEC AS USER = 'Fulvio'
+GO
+
+-- Exibe as permissões atribuídas ao usuário -> FULVIO
+EXEC sp_helprotect NULL, Fulvio
+GO
+
+-- Tentativa de inserção de um novo cliente.
+-- Funciona, pois a permissão DENY, sobre o INSERT
+-- realizados pelo usuario FULVIO foi revogada.
+INSERT INTO CLIENTES VALUES
+  (14, 'Carlton Banks', 5000.00)
+GO
+
+-- Lista os dados de todos os clientes
+SELECT * FROM CLIENTES
+GO
+
+-- Exibe o usuário atual do banco de dados
+SELECT CURRENT_USER AS 'Usuário Atual'
+GO
+
+-- Determinando em que tabelas o usuário atual tem
+-- a permissão SELECT
+SELECT has_perms_by_name(name, 'OBJECT',
+'SELECT') AS 'SELECT',
+      *
+FROM sys.tables
+GO
+
+-- Determinando em que tabelas o usuário atual tem
+-- a permissões SELECT e INSERT
+SELECT has_perms_by_name(name, 'OBJECT',
+'SELECT') AS 'SELECT',
+      has_perms_by_name(name, 'OBJECT',
+'INSERT') AS 'INSERT',
+        name AS 'Nome da Tabela'
+FROM sys.tables
+GO
+
+-- Altera para o usuário anterior ao atual -> DBO
+REVERT
+GO
+
+-- Exibe informações sobre os usuários 
+-- existentes no banco de dados
+SELECT name            AS 'Usuário',
+       authentication_type_desc AS
+'Tipo de Autenticação'
+FROM sys.database_principals
+WHERE type_desc = 'SQL_USER' AND
+      defaut_schema_name = 'dbo'
+GO
+
+-- Deleta o usuário AOPA
+DROP USER AOPA
+GO
+
+-- Deleta o login SUPERMERCADO_CARREFULVIOCJ3032299
+-- Não executar (por equanto)
+-- DROP LOGIN [Supermercado_CarrefulvioCJ3032299]
+-- GO

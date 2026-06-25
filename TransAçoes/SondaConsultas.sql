@@ -473,6 +473,66 @@ DROP USER AOPA
 GO
 
 -- Deleta o login SUPERMERCADO_CARREFULVIOCJ3032299
--- Não executar (por equanto)
--- DROP LOGIN [Supermercado_CarrefulvioCJ3032299]
--- GO
+DROP LOGIN [SONDA_admin]
+GO
+
+----------------
+-- 22/06/2026 --
+----------------
+--   BackUp   --
+----------------
+
+-- Precisa estar no master para fazer seguintes açoes --
+USE MASTER
+GO
+
+-- Verifica o modelo de backup do banco --
+SELECT name					AS 'Banco de dados',
+	   recovery_model_desc  AS 'Modelo de Backup'
+FROM sys.databases
+where name = 'SONDA'
+GO
+
+-- Backup Completo --
+BACKUP DATABASE SONDA
+TO DISK = 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Backup\SONDA.bak'
+WITH INIT, STATS = 10;
+GO
+
+-- Backup diferencial --
+BACKUP DATABASE SONDA
+TO DISK = 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Backup\SONDA.bak'
+WITH DIFFERENTIAL, INIT, STATS = 10;
+GO
+
+-- BackUp do log de transação --
+BACKUP LOG SONDA
+TO DISK = 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Log\SONDALogs.trn'
+WITH INIT, STATS = 10;
+GO
+
+-- Verifica os backups existentes --
+SELECT * FROM
+sys.dm_os_enumerate_filesystem('C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Backup\', '*');
+GO
+
+-- Exibe os nomes e caminhos corretos para realizar
+-- A restauração do backup --
+RESTORE FILELISTONLY
+FROM DISK = 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Backup\SONDA.bak';
+GO
+
+-- Altera o banco para o modo SINGLE_USER --
+ALTER DATABASE SONDA
+SET SINGLE_USER
+WITH ROLLBACK IMMEDIATE;
+GO
+
+--
+RESTORE DATABASE SONDA
+FROM DISK = 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\Backup\SONDA.bak'
+WITH
+  MOVE 'SONDA' TO 'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01\MSSQL\DATA\SONDA.mdf',
+REPLACE,
+RECOVERY;
+GO

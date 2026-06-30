@@ -1,0 +1,5 @@
+_id,nome,capacidade,procedimento,hospital
+2,UTI,10,Cuidados Intensivos e Monitoramento 24h,"{""_id"": 1, ""nome"": ""Hospital Da Paz""}"
+3,Pediatria,25,Atendimento Infantil e Neonatal,"{""_id"": 1, ""nome"": ""Hospital Da Paz""}"
+4,Cirurgia,30,Procedimentos Cirúrgicos Eletivos e Emergenciais,"{""_id"": 1, ""nome"": ""Hospital Da Paz""}"
+5,Enfermaria Geral,40,Internação para Pacientes Estáveis,"{""_id"": 1, ""nome"": ""Hospital Da Paz""}"

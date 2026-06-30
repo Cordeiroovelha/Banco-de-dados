@@ -1,0 +1,15 @@
+_id,Nome,Idade,contatoEmergencia,TipoSanguinio,Prioridade,Descricao
+2,Maria Oliveira,32,(11)91234-5678,A+,1,Febre alta e tosse
+3,Carlos Santos,58,(21)99876-5432,B+,3,Dor no peito
+4,Ana Paula Costa,27,(21)98765-1234,O+,2,Fratura no braço direito
+5,Roberto Lima,63,(21)99988-7766,AB-,3,Dificuldade respiratória
+6,Fernanda Souza,41,(11)97777-4444,A-,2,Enxaqueca severa
+7,Paulo Henrique,35,(21)98888-5555,O-,1,Corte profundo na mão
+8,Juliana Mendes,29,(11)95555-3333,B-,2,Dor abdominal intensa
+9,Marcos Vinicius,72,(21)94444-2222,A+,3,Pressão alta e tontura
+10,Patrícia Gomes,38,(21)93333-1111,O+,1,Infecção na garganta
+11,Ricardo Alves,50,(11)92222-8888,AB+,2,Dores nas costas
+12,Camila Rocha,26,(21)97777-6666,A+,1,Alergia medicamentosa
+13,Eduardo Campos,47,(21)96666-5555,O-,2,Bronquite aguda
+14,Tatiana Martins,33,(11)95555-4444,B+,2,Enjoo e vômito
+15,André Luiz,55,(21)98888-7777,A-,3,Suspeita de infarto

@@ -1,15 +1,15 @@
--- Pacientes
+//Pacientes
 db.Pacientes.insertOne({
   "_id": 1,
   "nome": "Jose da Silva",
-  "idade": 45,
+  "Idade": 45,
   "contatoEmergencia": "(11)98765-4321",
   "tipoSanguinio": "O-",
   "prioridade": 2,
   "descricao": "Dor de cabeça"
 })
 
---Hospital
+//Hospital
 db.Hospital.insertOne({
   "_id": 1,
   "nome": "Hospital Da Paz",
@@ -18,16 +18,16 @@ db.Hospital.insertOne({
   "email": "hospitaldapaz@gmail.com"
 })
 
--- Medicos
+// Medicos
 db.Medicos.insertOne({
   "_id": 1,
   "nome": "Dr. Augusto Manzano",
   "especialidade": "Obstetrícia",
-  "ala_id": 3
+  "ala_id": 3,
   "hospital_id": 1,
 })
 
--- Alas --
+// Alas
 db.Alas.insertOne({
   "_id": 1,
   "nome": "Emergencia",
@@ -39,7 +39,7 @@ db.Alas.insertOne({
    }
 })
 
--- Consultas
+// Consultas
 db.Consultas.insertOne ({
   "_id": 1,
   "paciente_id": 3,

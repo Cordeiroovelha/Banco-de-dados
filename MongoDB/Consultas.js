@@ -275,3 +275,66 @@ function cargaMedico(idMedico) {
 }
 
 // 20.
+function cargaMedico(idMedico) {
+    return db.Consultas.countDocuments({ medico_id: idMedico });
+}
+var total = cargaMedico(1);
+print("Total de consultas: " + total);
+
+// 21. 
+function medicoMaisOcupado() {
+    var medicos = db.Medicos.find().toArray();
+    var maxCarga = -1;
+    var medicoTop = null;
+
+    for (var i = 0; i < medicos.length; i++) {
+        var carga = cargaMedico(medicos[i]._id);
+        if (carga > maxCarga) {
+            maxCarga = carga;
+            medicoTop = medicos[i];
+        }
+    }
+
+    if (medicoTop) {
+        print("Médico mais ocupado: " + medicoTop.nome + " com " + maxCarga + " consultas.");
+    } else {
+        print("Nenhum médico encontrado.");
+    }
+}
+medicoMaisOcupado();
+
+// 22.
+db.Alas.updateMany(
+  {},
+  { $inc: { capacidade: 10 } }
+);
+
+// 23.
+db.Alas.updateOne(
+  { _id: 5 },
+  { $inc: { capacidade: -20 } }
+);
+
+// 24.
+// mongodump --db Hospital --out "C:\Users\Murilo Cordeiro\Downloads\backup"
+
+// 25.
+// mongoexport --db Hospital --collection Pacientes --out 
+// "C:\Users\Murilo Cordeiro\Downloads\pacientes_backup.json"
+
+// 26.
+db.Pacientes.find({
+  $or: [
+    { Idade: { $gt: 50 } },
+    { TipoSanguinio: "O-" }
+  ]
+});
+
+// 27. 
+db.Pacientes.find({
+  idade: { $gt: 50 },
+  $nor: [
+    { tipoSanguinio: "O-" }
+  ]
+});
+
